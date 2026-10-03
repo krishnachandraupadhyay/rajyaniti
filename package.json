@@ -1,0 +1,22 @@
+{
+  "name": "android-3d-prototype",
+  "version": "1.0.0",
+  "description": "Android 3D Third-Person Playable Prototype with Customization, Quests, NPCs, and Save System",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host",
+    "build": "vite build",
+    "preview": "vite preview",
+    "android:sync": "cap sync android",
+    "android:open": "cap open android"
+  },
+  "dependencies": {
+    "three": "^0.160.0"
+  },
+  "devDependencies": {
+    "vite": "^5.0.12",
+    "@capacitor/cli": "^5.6.0",
+    "@capacitor/core": "^5.6.0",
+    "@capacitor/android": "^5.6.0"
+  }
+}
