@@ -1,10 +1,22 @@
 export class CustomizationStudio {
-  constructor(character, onSaveCallback) {
+  constructor(character, gameState, onSaveCallback) {
     this.character = character;
+    this.gameState = gameState;
     this.onSave = onSaveCallback;
 
-    // Temporary working state
-    this.state = { ...this.character.profile };
+    this.state = {
+      name: this.gameState.playerName,
+      age: this.gameState.age,
+      gender: this.gameState.gender,
+      education: this.gameState.education,
+      background: this.gameState.background,
+      skinColor: this.character.profile.skinColor,
+      hairColor: this.character.profile.hairColor,
+      hairStyle: this.character.profile.hairStyle,
+      kurtaColor: this.character.profile.kurtaColor,
+      jacketColor: this.character.profile.jacketColor,
+      hasJacket: this.character.profile.hasJacket
+    };
 
     this.setupUI();
     this.syncUIFromState();
@@ -39,7 +51,7 @@ export class CustomizationStudio {
     const inputName = document.getElementById('input-character-name');
     if (inputName) {
       inputName.addEventListener('input', (e) => {
-        this.state.name = e.target.value.trim() || 'योद्धा';
+        this.state.name = e.target.value.trim() || 'नागरिक';
       });
     }
 
@@ -66,17 +78,17 @@ export class CustomizationStudio {
       this.character.applyProfile(this.state);
     });
 
-    // 5. Outfit color swatches
+    // 5. Nehru Jacket Color Swatches
     this.setupSwatches('swatches-outfit', (color) => {
-      this.state.outfitColor = color;
+      this.state.jacketColor = color;
       this.character.applyProfile(this.state);
     });
 
-    // 6. Cape toggle
-    const toggleCape = document.getElementById('toggle-cape');
-    if (toggleCape) {
-      toggleCape.addEventListener('change', (e) => {
-        this.state.hasCape = e.target.checked;
+    // 6. Nehru Jacket Toggle
+    const toggleJacket = document.getElementById('toggle-cape'); // Reused element
+    if (toggleJacket) {
+      toggleJacket.addEventListener('change', (e) => {
+        this.state.hasJacket = e.target.checked;
         this.character.applyProfile(this.state);
       });
     }
@@ -93,26 +105,42 @@ export class CustomizationStudio {
         if (ageVal) ageVal.textContent = `${val} वर्ष`;
 
         if (ageBadge) {
-          if (val < 22) ageBadge.textContent = 'तरुण योद्धा (Novice)';
-          else if (val < 38) ageBadge.textContent = 'वीर योद्धा (Prime)';
-          else if (val < 52) ageBadge.textContent = 'अनुभवी सेनापति (Veteran)';
-          else ageBadge.textContent = 'पूज्य गुरु (Elder Master)';
+          if (val < 28) ageBadge.textContent = 'युवा नेता (Young Leader)';
+          else if (val < 45) ageBadge.textContent = 'परिपक्व जनसेवक (Seasoned Activist)';
+          else if (val < 60) ageBadge.textContent = 'वरिष्ठ जन-प्रतिनिधि (Senior Statesman)';
+          else ageBadge.textContent = 'मार्गदर्शक नेता (Elder Statesman)';
         }
 
         this.character.applyProfile(this.state);
       });
     }
 
-    // 8. Archetype cards
+    // 8. Background Archetype Selection (Indian Career Roots)
     const cards = document.querySelectorAll('.archetype-card');
     cards.forEach((card) => {
       card.addEventListener('click', () => {
         cards.forEach((c) => c.classList.remove('active'));
         card.classList.add('active');
-        this.state.archetype = card.dataset.archetype;
-        this.character.applyProfile(this.state);
+        this.state.background = card.dataset.archetype;
+        this.applyStartingBackgroundBonus(card.dataset.archetype);
       });
     });
+  }
+
+  applyStartingBackgroundBonus(bg) {
+    if (bg === 'activist') {
+      // Grassroots Social Worker
+      this.state.education = "समाज सेवा में स्नातक (BSW)";
+    } else if (bg === 'lawyer') {
+      // Young Advocate
+      this.state.education = "विधि स्नातक (LLB Advocate)";
+    } else if (bg === 'merchant') {
+      // Local Merchant
+      this.state.education = "वाणिज्य स्नातक (B.Com)";
+    } else if (bg === 'teacher') {
+      // Idealist Teacher
+      this.state.education = "शिक्षा शास्त्र (B.Ed / M.A.)";
+    }
   }
 
   setupSwatches(containerId, onSelect) {
@@ -129,30 +157,27 @@ export class CustomizationStudio {
   }
 
   syncUIFromState() {
-    this.state = { ...this.character.profile };
+    this.state.name = this.gameState.playerName;
+    this.state.age = this.gameState.age;
+    this.state.background = this.gameState.background;
 
-    // Update Name
     const inputName = document.getElementById('input-character-name');
     if (inputName) inputName.value = this.state.name;
 
-    // Update Age
     const sliderAge = document.getElementById('slider-age');
     const ageVal = document.getElementById('age-display-value');
     if (sliderAge) sliderAge.value = this.state.age;
     if (ageVal) ageVal.textContent = `${this.state.age} वर्ष`;
 
-    // Update Cape
-    const toggleCape = document.getElementById('toggle-cape');
-    if (toggleCape) toggleCape.checked = !!this.state.hasCape;
-
-    // Update HUD
     const hudName = document.getElementById('hud-player-name');
     const hudBadge = document.getElementById('hud-player-badge');
     const hudAge = document.getElementById('hud-age-tag');
+    const hudWallet = document.getElementById('hud-wallet-count');
 
-    if (hudName) hudName.textContent = this.state.name;
-    if (hudBadge) hudBadge.textContent = this.state.archetype.toUpperCase();
-    if (hudAge) hudAge.textContent = `उम्र: ${this.state.age}`;
+    if (hudName) hudName.textContent = this.gameState.playerName;
+    if (hudBadge) hudBadge.textContent = this.gameState.getCareerTitle();
+    if (hudAge) hudAge.textContent = `उम्र: ${this.gameState.age}`;
+    if (hudWallet) hudWallet.textContent = `₹${this.gameState.wallet.toLocaleString('en-IN')}`;
   }
 
   open() {
@@ -165,6 +190,33 @@ export class CustomizationStudio {
   }
 
   saveAndApply() {
+    this.gameState.playerName = this.state.name;
+    this.gameState.age = this.state.age;
+    this.gameState.background = this.state.background;
+    if (this.state.education) this.gameState.education = this.state.education;
+
+    // Apply starting background economy if initial
+    if (this.gameState.careerTier === 1 && !this.gameState.initializedBackground) {
+      this.gameState.initializedBackground = true;
+      if (this.state.background === 'activist') {
+        this.gameState.wallet = 5000;
+        this.gameState.popularity = 35;
+        this.gameState.oratorySkill = 35;
+      } else if (this.state.background === 'lawyer') {
+        this.gameState.wallet = 25000;
+        this.gameState.popularity = 22;
+        this.gameState.oratorySkill = 45;
+      } else if (this.state.background === 'merchant') {
+        this.gameState.wallet = 65000;
+        this.gameState.popularity = 18;
+        this.gameState.oratorySkill = 25;
+      } else if (this.state.background === 'teacher') {
+        this.gameState.wallet = 15000;
+        this.gameState.popularity = 30;
+        this.gameState.oratorySkill = 40;
+      }
+    }
+
     this.character.applyProfile(this.state);
     this.syncUIFromState();
     this.close();

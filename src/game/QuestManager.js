@@ -1,51 +1,57 @@
 import * as THREE from 'three';
 
 export class QuestManager {
-  constructor(world, audioSystem) {
+  constructor(world, audioSystem, gameState) {
     this.world = world;
     this.audio = audioSystem;
+    this.gameState = gameState;
 
-    // 4 Missions Specification
+    this.signaturesCollected = false;
+    this.healthCampDone = false;
+    this.schoolPledged = false;
+
+    // 4 Progressive Indian Civic & Political Missions
     this.quests = [
       {
         id: 1,
-        title: '1. एल्डर से मिलें (Speak with Elder)',
-        desc: 'गांव के मुख्य मंडप में जाएं और एल्डर एल्ड्रिन से बात करके अपनी यात्रा का उद्देश्य जानें।',
-        targetPos: new THREE.Vector3(0, 0.4, 10),
-        status: 'active', // active, completed, locked
-        reward: 'आशीर्वाद और क्रिस्टल खोज मार्गदर्शिका'
+        title: '1. जन समस्या: टूटी सड़क व शिकायत (Citizen Grievance)',
+        desc: 'सड़क के पास सुनीता देवी व रमेश चायवाले से बात करके जन-हस्ताक्षर लें, फिर नगर निगम कार्यालय में शिकायत दर्ज कराएं।',
+        targetPos: new THREE.Vector3(-3.2, 0, 5.2), // Sunita Devi & Pothole
+        targetName: 'सुनीता देवी व टूटी सड़क',
+        status: 'active',
+        reward: 'जनसेवक (Activist) उपाधि • +20% जनप्रियता • ₹2,000'
       },
       {
         id: 2,
-        title: '2. 4 तत्वीय क्रिस्टल ढूंढें (Collect 4 Crystals)',
-        desc: 'द्वीप में छिपे 4 दिव्य क्रिस्टल (जल, अग्नि, पृथ्वी, वायु) खोजें और उनकी ऊर्जा प्राप्त करें।',
-        targetPos: null, // Dynamic (points to nearest remaining crystal)
+        title: '2. स्वच्छ मोहल्ला व स्वास्थ्य शिविर (Health & Cleanliness Drive)',
+        desc: 'प्राथमिक स्वास्थ्य केंद्र पर डॉ. प्रिया से मिलें और गंदे पानी व मच्छरों की रोकथाम के लिए दवा व स्वास्थ्य शिविर लगाएं।',
+        targetPos: new THREE.Vector3(16, 0, -18), // Clinic
+        targetName: 'प्राथमिक स्वास्थ्य केंद्र (डॉ. प्रिया)',
         status: 'locked',
-        reward: 'तत्वीय शक्ति और मीनार की चाबी'
+        reward: 'पार्टी गठन की अनुमति • +25% जनप्रियता • ₹5,000'
       },
       {
         id: 3,
-        title: '3. मीनार का पावन दीया जलाएं (Ignite Mountain Beacon)',
-        desc: 'पूर्वी पर्वत की चोटी पर स्थित प्राचीन मीनार पर चढ़ें और पवित्र दीया प्रज्वलित करें।',
-        targetPos: new THREE.Vector3(35, 14, 35),
+        title: '3. भविष्य की पाठशाला (Primary School Renovation)',
+        desc: 'राजकीय प्राथमिक विद्यालय में मास्टरजी से मिलें और बच्चों की पढ़ाई के लिए डेस्क, पंखे व किताबों की व्यवस्था करें।',
+        targetPos: new THREE.Vector3(-16, 0, 16), // School
+        targetName: 'राजकीय प्राथमिक विद्यालय (मास्टरजी)',
         status: 'locked',
-        reward: 'राज्य की सुरक्षा और मंदिर सील कुंजी'
+        reward: 'युवाओं का समर्थन • +30% जनप्रियता • ₹10,000'
       },
       {
         id: 4,
-        title: '4. प्राचीन मंदिर का सील तोड़ें (Unseal Astral Shrine)',
-        desc: 'मध्यवर्ती पवित्र मंदिर पर लौटें, सुरक्षा कवच तोड़ें और प्राचीन पावन अवशेष प्राप्त करें।',
-        targetPos: new THREE.Vector3(0, 1.2, -15),
+        title: '4. पहला चुनावी दंगल (Ward Election Campaign & Victory)',
+        desc: 'गांधी मैदान के मंच पर अपनी पहली जनसभा व रैली करें, घर-घर प्रचार करें और पार्षद चुनाव जीतकर जन-प्रतिनिधि बनें!',
+        targetPos: new THREE.Vector3(0, 0, -32), // Gandhi Maidan Stage
+        targetName: 'गांधी मैदान जनसभा मंच',
         status: 'locked',
-        reward: 'दिव्य योद्धा की उपाधि (Realm Champion)'
+        reward: 'निर्वाचित वार्ड पार्षद (Councilor) • ₹1,50,000 नगर निगम बजट'
       }
     ];
 
     this.currentQuestId = 1;
-    this.collectedCrystals = new Set();
-    this.totalCrystals = 4;
     this.startTime = Date.now();
-    this.isVictory = false;
 
     this.setupUI();
     this.updateHUD();
@@ -54,7 +60,6 @@ export class QuestManager {
   setupUI() {
     this.hudTitle = document.getElementById('hud-quest-title');
     this.hudDist = document.getElementById('quest-distance-indicator');
-    this.hudCrystals = document.getElementById('hud-crystals-count');
     this.questModal = document.getElementById('quest-modal');
     this.questItemsList = document.getElementById('quest-items-list');
 
@@ -65,14 +70,6 @@ export class QuestManager {
     if (btnLog) btnLog.addEventListener('click', () => this.openQuestLog());
     if (btnTracker) btnTracker.addEventListener('click', () => this.openQuestLog());
     if (btnClose) btnClose.addEventListener('click', () => this.closeQuestLog());
-
-    // Victory modal continue button
-    const btnVic = document.getElementById('btn-victory-continue');
-    if (btnVic) {
-      btnVic.addEventListener('click', () => {
-        document.getElementById('victory-modal').classList.add('hidden');
-      });
-    }
   }
 
   getCurrentQuest() {
@@ -84,111 +81,100 @@ export class QuestManager {
     if (!q || q.status === 'completed') return;
 
     q.status = 'completed';
-    this.audio.playQuestComplete();
-    this.showToast('✨ मिशन पूर्ण! (Quest Complete)', q.title);
+    if (this.audio) this.audio.playQuestComplete();
+
+    // Mission 1 completion
+    if (questId === 1) {
+      this.gameState.promoteCareer(2); // Promoted to Community Activist
+      this.gameState.addMoney(2000);
+      this.gameState.boostPopularity(20);
+      this.showToast('🎉 जनसेवक का उदय!', 'नगर निगम में जन-शिकायत दर्ज! आप अब "जनसेवक" बन गए हैं। (+₹2,000, +20% जनप्रियता)');
+    } else if (questId === 2) {
+      this.gameState.addMoney(5000);
+      this.gameState.boostPopularity(25);
+      this.gameState.party.isFormed = true;
+      this.showToast('🏥 स्वास्थ्य शिविर सफल!', 'स्वच्छता व स्वास्थ्य अभियान पूर्ण! पार्टी गठन की अनुमति मिली। (+₹5,000, +25% जनप्रियता)');
+    } else if (questId === 3) {
+      this.gameState.party.partyFunds += 10000;
+      this.gameState.boostPopularity(30);
+      this.showToast('📚 शिक्षा संकल्प पूर्ण!', 'स्कूल में पुस्तकें व डेस्क वितरित! भारी जनसमर्थन मिला। (+₹10,000 पार्टी फंड, +30% जनप्रियता)');
+    } else if (questId === 4) {
+      this.gameState.promoteCareer(3); // Ward Councilor
+      this.showToast('🏆 ऐतिहासिक चुनावी विजय!', 'आप आनंदनगर वार्ड 7 के निर्वाचित पार्षद बन चुके हैं!');
+    }
 
     // Advance to next quest
     if (questId < this.quests.length) {
       this.currentQuestId = questId + 1;
       const nextQ = this.quests.find((item) => item.id === this.currentQuestId);
       if (nextQ) nextQ.status = 'active';
-    } else {
-      // Victory!
-      this.triggerVictory();
     }
 
     this.updateHUD();
   }
 
-  // Handle crystal pickup
-  onPickupCrystal(crystalId, crystalName) {
-    if (this.collectedCrystals.has(crystalId)) return;
-    this.collectedCrystals.add(crystalId);
-
-    this.audio.playCrystalPickup();
-    this.showToast('💎 क्रिस्टल मिला!', `${crystalName} एकत्र किया गया (${this.collectedCrystals.size}/${this.totalCrystals})`);
-
+  // Hook for Mission 1 signature event
+  onSignaturesCollected() {
+    this.signaturesCollected = true;
+    this.showToast('✍️ हस्ताक्षर प्राप्त!', 'सुनीता देवी व मोहल्लेवासियों के हस्ताक्षर मिल गए। अब नगर निगम दफ्तर जाएं!');
+    const q1 = this.quests.find((q) => q.id === 1);
+    if (q1) {
+      q1.targetPos = new THREE.Vector3(-18, 0, -12); // Nagar Nigam Office
+      q1.targetName = 'नगर निगम कार्यालय (शिकायत पेटी)';
+    }
     this.updateHUD();
+  }
 
-    // Check if Quest 2 is active and all crystals are collected
-    if (this.currentQuestId === 2 && this.collectedCrystals.size >= this.totalCrystals) {
-      setTimeout(() => {
-        this.completeQuest(2);
-      }, 500);
+  // Hook for Mission 2 health camp
+  onHealthCampOrganized() {
+    this.healthCampDone = true;
+    if (this.currentQuestId === 2) {
+      this.completeQuest(2);
     }
   }
 
-  // Check proximity triggers for Quest 3 (Beacon) and Quest 4 (Shrine)
+  // Hook for Mission 3 school support
+  onSchoolDonationPledged() {
+    this.schoolPledged = true;
+    if (this.currentQuestId === 3) {
+      this.completeQuest(3);
+    }
+  }
+
+  // Check world interaction targets (e.g. Nagar Nigam Complaint Drop, Gandhi Maidan Stage)
   checkWorldObjectives(playerPos) {
-    // Quest 3: Watchtower Beacon
-    if (this.currentQuestId === 3 && !this.world.beaconIgnited) {
-      const dist = playerPos.distanceTo(new THREE.Vector3(35, 14, 35));
+    // Mission 1: Submit Petition at Nagar Nigam Drop Box
+    if (this.currentQuestId === 1 && this.signaturesCollected) {
+      const dist = playerPos.distanceTo(new THREE.Vector3(-18, 0, -12));
+      if (dist < 4.2) {
+        return {
+          type: 'petition_submit',
+          actionText: 'शिकायत दर्ज करें (File Petition)',
+          name: 'नगर निगम शिकायत पेटी (Grievance Box)',
+          execute: () => {
+            this.completeQuest(1);
+          }
+        };
+      }
+    }
+
+    // Mission 4: Gandhi Maidan Stage
+    if (this.currentQuestId === 4) {
+      const dist = playerPos.distanceTo(new THREE.Vector3(0, 0, -32));
       if (dist < 5.0) {
         return {
-          type: 'beacon',
-          actionText: 'दीया जलाएं (Ignite Beacon)',
-          name: 'प्राचीन मीनार का पावन दीया',
+          type: 'rally_speech',
+          actionText: 'रैली शुरू करें (Hold Election Rally)',
+          name: 'गांधी मैदान जनसभा मंच',
           execute: () => {
-            this.world.igniteBeacon();
-            this.audio.playBeaconIgnite();
-            this.completeQuest(3);
-          }
-        };
-      }
-    }
-
-    // Quest 4: Central Astral Shrine
-    if (this.currentQuestId === 4 && !this.world.shrineUnlocked) {
-      const dist = playerPos.distanceTo(new THREE.Vector3(0, 1.2, -15));
-      if (dist < 4.5) {
-        return {
-          type: 'shrine',
-          actionText: 'सील तोड़ें (Unseal Shrine & Take Relic)',
-          name: 'पवित्र दिव्य अवशेष (Astral Relic)',
-          execute: () => {
-            this.world.unlockShrine();
-            this.audio.playShrineUnlock();
-            this.completeQuest(4);
-          }
-        };
-      }
-    }
-
-    // Crystals pickup trigger
-    for (const c of this.world.crystals) {
-      if (!c.collected && playerPos.distanceTo(c.pos) < 2.5) {
-        return {
-          type: 'crystal',
-          actionText: 'क्रिस्टल उठाएं (Collect)',
-          name: c.name,
-          execute: () => {
-            c.collected = true;
-            c.group.visible = false;
-            this.onPickupCrystal(c.id, c.name);
+            const electionBtn = document.getElementById('btn-election-open');
+            if (electionBtn) electionBtn.click();
           }
         };
       }
     }
 
     return null;
-  }
-
-  triggerVictory() {
-    this.isVictory = true;
-    const modal = document.getElementById('victory-modal');
-    const statsBox = document.getElementById('victory-stats-box');
-    const elapsedSec = Math.floor((Date.now() - this.startTime) / 1000);
-    const mins = Math.floor(elapsedSec / 60);
-    const secs = elapsedSec % 60;
-
-    if (statsBox) {
-      statsBox.innerHTML = `
-        <div><strong>💎 क्रिस्टल:</strong> 4 / 4</div>
-        <div><strong>⏱️ समय:</strong> ${mins}m ${secs}s</div>
-        <div><strong>🏅 उपाधि:</strong> दिव्य संरक्षक</div>
-      `;
-    }
-    if (modal) modal.classList.remove('hidden');
   }
 
   showToast(title, desc) {
@@ -204,7 +190,7 @@ export class QuestManager {
     if (this.toastTimeout) clearTimeout(this.toastTimeout);
     this.toastTimeout = setTimeout(() => {
       toast.classList.add('hidden');
-    }, 3800);
+    }, 4500);
   }
 
   updateHUD(playerPos = null) {
@@ -212,30 +198,12 @@ export class QuestManager {
     if (cur && this.hudTitle) {
       this.hudTitle.textContent = cur.title;
     }
-    if (this.hudCrystals) {
-      this.hudCrystals.textContent = `💎 ${this.collectedCrystals.size}/4`;
-    }
 
-    // Distance calculation
     if (playerPos && cur && this.hudDist) {
-      let target = cur.targetPos;
-      if (cur.id === 2) {
-        // Nearest uncollected crystal
-        let nearestDist = Infinity;
-        for (const c of this.world.crystals) {
-          if (!c.collected) {
-            const d = playerPos.distanceTo(c.pos);
-            if (d < nearestDist) {
-              nearestDist = d;
-              target = c.pos;
-            }
-          }
-        }
-      }
-
+      const target = cur.targetPos;
       if (target) {
         const d = Math.round(playerPos.distanceTo(target));
-        this.hudDist.textContent = `🎯 ${d}m`;
+        this.hudDist.textContent = `🎯 ${cur.targetName} (${d}m)`;
       } else {
         this.hudDist.textContent = `✓ पूर्ण`;
       }
@@ -252,11 +220,11 @@ export class QuestManager {
 
       let badgeHtml = '';
       if (q.status === 'completed') {
-        badgeHtml = '<span class="quest-status-badge badge-completed">✓ पूर्ण (Done)</span>';
+        badgeHtml = '<span class="quest-status-badge badge-completed">✓ पूर्ण (Completed)</span>';
       } else if (q.status === 'active') {
-        badgeHtml = '<span class="quest-status-badge badge-active">⚡ सक्रिय (In Progress)</span>';
+        badgeHtml = '<span class="quest-status-badge badge-active">⚡ सक्रिय (Current Goal)</span>';
       } else {
-        badgeHtml = '<span class="quest-status-badge badge-locked">🔒 लॉक (Locked)</span>';
+        badgeHtml = '<span class="quest-status-badge badge-locked">🔒 आगामी (Next Stage)</span>';
       }
 
       card.innerHTML = `
@@ -265,7 +233,7 @@ export class QuestManager {
           ${badgeHtml}
         </div>
         <div class="quest-item-desc">${q.desc}</div>
-        <div class="quest-reward-tag">🎁 पुरस्कार: ${q.reward}</div>
+        <div class="quest-reward-tag">🎁 पुरस्कार व प्रभाव: ${q.reward}</div>
       `;
 
       this.questItemsList.appendChild(card);

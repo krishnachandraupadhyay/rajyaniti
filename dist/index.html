@@ -3,19 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Astral Realm 3D - Android Playable Prototype</title>
+  <title>RashtraNiti 3D - Indian Political Life Simulator</title>
   
   <!-- Mobile & PWA optimization -->
-  <meta name="theme-color" content="#0d1117">
+  <meta name="theme-color" content="#0f172a">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="manifest" href="/manifest.json">
 
-  <!-- Google Fonts -->
+  <!-- Google Fonts: Rozha One, Cinzel, Plus Jakarta Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Rozha+One&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800&family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Rozha+One&display=swap" rel="stylesheet">
 
   <!-- Three.js Import Map for standalone & Vite compatibility -->
 
@@ -27,58 +27,66 @@
       }
     }
   </script>
-  <script type="module" crossorigin src="/assets/index-Vz3AS6qe.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-DoluQk6k.css">
+  <script type="module" crossorigin src="/assets/index-DynnpTGO.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-CdmwLi-p.css">
 </head>
 <body class="game-body">
   <!-- 3D Canvas Container -->
   <div id="canvas-container"></div>
 
-  <!-- HUD Overlay -->
+  <!-- HUD Overlay Layer -->
   <div id="game-hud" class="hud-layer">
-    <!-- Top Bar: Player Stats & Quest Quick Info -->
+    <!-- Top Bar: Citizen Status, Wallet, Day & Time, Governance, Quests -->
     <header class="hud-top-bar">
+      <!-- Player Profile & Career -->
       <div class="player-profile-pill" id="profile-pill-btn">
-        <div class="profile-avatar" id="hud-avatar">👤</div>
+        <div class="profile-avatar" id="hud-avatar">🇮🇳</div>
         <div class="profile-info">
           <div class="player-name-row">
-            <span id="hud-player-name" class="hud-name">योद्धा (Warrior)</span>
-            <span id="hud-player-badge" class="hud-badge">Nomad</span>
+            <span id="hud-player-name" class="hud-name">आर्यन शर्मा</span>
+            <span id="hud-player-badge" class="hud-badge">आम नागरिक</span>
           </div>
           <div class="stats-sub-row">
-            <span class="hud-age-tag" id="hud-age-tag">उम्र: 24</span>
-            <span class="hud-crystals-tag" id="hud-crystals-count">💎 0/4</span>
+            <span class="hud-wallet-tag" id="hud-wallet-count">₹12,000</span>
+            <span class="hud-time-tag" id="hud-time-tag">दिन 1 • 09:30 AM</span>
+            <span class="hud-pop-tag" id="hud-popularity-tag">जनसमर्थन: 25%</span>
+          </div>
+          <!-- Energy mini bar -->
+          <div class="energy-mini-bar-track" title="ऊर्जा (Energy)">
+            <div class="energy-mini-bar-fill" id="hud-energy-fill" style="width: 100%;"></div>
           </div>
         </div>
       </div>
 
-      <!-- Current Quest Banner -->
+      <!-- Current Objective Banner -->
       <div class="quest-tracker-pill" id="quest-tracker-btn">
         <div class="quest-glow-icon">📜</div>
         <div class="quest-summary">
           <div class="quest-header-row">
-            <span class="quest-label">वर्तमान मिशन (Mission)</span>
-            <span class="quest-distance" id="quest-distance-indicator">🎯 24m</span>
+            <span class="quest-label">वर्तमान जन-लक्ष्य (Current Mission)</span>
+            <span class="quest-distance" id="quest-distance-indicator">🎯 18m</span>
           </div>
-          <div class="quest-current-title" id="hud-quest-title">1. एल्डर से मिलें (Speak with Elder)</div>
+          <div class="quest-current-title" id="hud-quest-title">1. जन समस्या: टूटी सड़क व शिकायत</div>
         </div>
       </div>
 
-      <!-- Quick Action Buttons: Save, Audio, Quests, Customize -->
+      <!-- Quick Action Buttons -->
       <div class="hud-top-actions">
         <button id="btn-audio-toggle" class="hud-icon-btn" title="ध्वनि (Sound)" aria-label="Toggle Sound">🔊</button>
+        <button id="btn-governance-open" class="hud-icon-btn btn-highlight" title="शासन व विकास (Governance)" aria-label="Governance">🏛️</button>
+        <button id="btn-election-open" class="hud-icon-btn btn-highlight-gold" title="पार्टी व चुनाव (Elections & Party)" aria-label="Elections">🗳️</button>
+        <button id="btn-quest-log" class="hud-icon-btn" title="मिशन सूची (Missions)" aria-label="Missions Log">📜</button>
+        <button id="btn-customize-open" class="hud-icon-btn" title="पहचान व वेशभूषा (Character)" aria-label="Character Customization">👤</button>
         <button id="btn-save-menu" class="hud-icon-btn" title="गेम सेव / लोड (Save/Load)" aria-label="Save or Load">💾</button>
-        <button id="btn-quest-log" class="hud-icon-btn" title="मिशन सूची (Quests)" aria-label="Quest Log">📜</button>
-        <button id="btn-customize-open" class="hud-icon-btn" title="कैरेक्टर कस्टमाइज़ (Customize)" aria-label="Customize Character">🎨</button>
       </div>
     </header>
 
-    <!-- Center Interaction Prompt (Appears when near NPC or Object) -->
+    <!-- Center Interaction Prompt -->
     <div id="interact-prompt" class="interact-prompt-card hidden">
       <div class="prompt-key-badge">E / 💬</div>
       <div class="prompt-text-group">
         <div class="prompt-main-text" id="prompt-action-text">बात करें (Talk)</div>
-        <div class="prompt-sub-text" id="prompt-target-name">Elder Eldrin</div>
+        <div class="prompt-sub-text" id="prompt-target-name">रमेश चायवाला</div>
       </div>
     </div>
 
@@ -86,14 +94,14 @@
     <div id="game-toast" class="game-toast hidden">
       <div class="toast-icon" id="toast-icon">✨</div>
       <div class="toast-body">
-        <div class="toast-title" id="toast-title">मिशन पूर्ण!</div>
-        <div class="toast-desc" id="toast-desc">तत्वीय क्रिस्टल खोज शुरू हो गई है।</div>
+        <div class="toast-title" id="toast-title">जनसेवक का उदय!</div>
+        <div class="toast-desc" id="toast-desc">सड़क की शिकायत नगर निगम में दर्ज हो गई।</div>
       </div>
     </div>
 
     <!-- Mobile Virtual Controls -->
     <div class="mobile-controls-layer" id="mobile-controls">
-      <!-- Left Joystick Zone -->
+      <!-- Left Virtual Joystick -->
       <div class="joystick-zone" id="joystick-zone">
         <div class="joystick-base" id="joystick-base">
           <div class="joystick-thumb" id="joystick-thumb"></div>
@@ -105,13 +113,13 @@
       <div class="action-buttons-zone">
         <div class="camera-look-hint">👆 स्वाइप: कैमरा घुमाएं (Look)</div>
         <div class="action-buttons-grid">
-          <button id="btn-mobile-attack" class="action-btn action-attack-btn" aria-label="Attack">
-            <span class="btn-emoji">⚔️</span>
-            <span class="btn-text">हमला (F)</span>
+          <button id="btn-mobile-attack" class="action-btn action-namaste-btn" aria-label="Namaste / Greet">
+            <span class="btn-emoji">🙏</span>
+            <span class="btn-text">नमस्ते (F)</span>
           </button>
-          <button id="btn-mobile-interact" class="action-btn action-interact-btn" aria-label="Interact">
+          <button id="btn-mobile-interact" class="action-btn action-interact-btn" aria-label="Talk or Interact">
             <span class="btn-emoji">💬</span>
-            <span class="btn-text">इंटरैक्ट (E)</span>
+            <span class="btn-text">बात करें (E)</span>
           </button>
           <button id="btn-mobile-jump" class="action-btn action-jump-btn" aria-label="Jump">
             <span class="btn-emoji">🦘</span>
@@ -126,17 +134,17 @@
   <div id="dialogue-modal" class="modal-overlay hidden">
     <div class="dialogue-card">
       <div class="dialogue-header">
-        <div class="npc-avatar-box" id="dialogue-npc-avatar">🧙‍♂️</div>
+        <div class="npc-avatar-box" id="dialogue-npc-avatar">☕</div>
         <div class="npc-details">
-          <h3 id="dialogue-speaker-name" class="speaker-name">Elder Eldrin</h3>
-          <span id="dialogue-speaker-role" class="speaker-role">संरक्षक एवं मार्गदर्शक (Village Elder)</span>
+          <h3 id="dialogue-speaker-name" class="speaker-name">रमेश चायवाला</h3>
+          <span id="dialogue-speaker-role" class="speaker-role">चाय विक्रेता व मोहल्ले का केंद्र</span>
         </div>
         <button id="dialogue-close-btn" class="modal-x-btn">✕</button>
       </div>
 
       <div class="dialogue-body">
         <p id="dialogue-text-content" class="dialogue-typewriter">
-          "स्वागत है, बहादुर यात्री! हमारे इस प्राचीन पावन क्षेत्र में तुम्हारी प्रतीक्षा हो रही थी।"
+          "अरे भैया, राम-राम! आज सुबह की ताज़ा अदरक वाली कड़क चाय तैयार है।"
         </p>
       </div>
 
@@ -146,40 +154,165 @@
     </div>
   </div>
 
-  <!-- Character Customization Modal (Looks, Background, Age) -->
+  <!-- Governance & Municipal Dashboard Modal -->
+  <div id="governance-modal" class="modal-overlay hidden">
+    <div class="modal-sheet">
+      <div class="sheet-header">
+        <div class="header-titles">
+          <h2 class="sheet-title">🏛️ शासन व विकास बोर्ड (Ward Governance)</h2>
+          <p class="sheet-subtitle">आनंदनगर वार्ड 7 • नगर निगम बजट व जन शिकायत निवारण</p>
+        </div>
+        <button id="governance-close-btn" class="modal-x-btn">✕</button>
+      </div>
+
+      <div class="sheet-content">
+        <!-- Governance Overview Bar -->
+        <div class="gov-metrics-bar">
+          <div class="metric-card">
+            <span class="metric-label">वार्ड खजाना (Treasury)</span>
+            <span class="metric-val" id="gov-treasury-val">₹4,50,000</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-label">जन संतुष्टि (Approval)</span>
+            <span class="metric-val" id="gov-satisfaction-val">42%</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-label">वर्तमान पद (Post)</span>
+            <span class="metric-val" id="gov-tier-badge" style="font-size:0.75rem">आम नागरिक</span>
+          </div>
+        </div>
+
+        <!-- Section 1: Development Projects -->
+        <h3 class="section-title">🏗️ विकास योजनाएं व निर्माण कार्य (Civic Infrastructure)</h3>
+        <div class="gov-projects-grid" id="gov-projects-list">
+          <!-- Injected via GovernanceSystem -->
+        </div>
+
+        <!-- Section 2: Citizen Complaints -->
+        <h3 class="section-title" style="margin-top: 20px;">📋 लंबित जन-शिकायतें (Citizen Grievance Redressal)</h3>
+        <div class="grievances-list" id="gov-grievances-list">
+          <!-- Injected via GovernanceSystem -->
+        </div>
+
+        <!-- Section 3: National PM Section (Unlocked at Level 5/6) -->
+        <div id="gov-national-section" class="hidden" style="margin-top:24px; padding-top:16px; border-top:1px solid var(--border-glass)">
+          <h3 class="section-title" style="color:var(--accent-gold)">🇮🇳 राष्ट्रीय नीतियां व संसद (National PM Agenda)</h3>
+          <div class="gov-projects-grid" id="gov-national-list"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Political Party, Rallies & Election Modal -->
+  <div id="election-modal" class="modal-overlay hidden">
+    <div class="modal-sheet">
+      <div class="sheet-header">
+        <div class="header-titles">
+          <h2 class="sheet-title">🗳️ राजनीतिक मंच व चुनाव (Party & Elections)</h2>
+          <p class="sheet-subtitle">पार्टी प्रबंधन, गांधी मैदान में रैली, और मतदान</p>
+        </div>
+        <button id="election-close-btn" class="modal-x-btn">✕</button>
+      </div>
+
+      <div class="sheet-content" id="election-sheet-content">
+        <!-- Rendered by ElectionSystem -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Character Creation & Background Studio -->
   <div id="customization-modal" class="modal-overlay hidden">
     <div class="modal-sheet">
       <div class="sheet-header">
         <div class="header-titles">
-          <h2 class="sheet-title">कैरेक्टर कस्टमाइज़ेशन (Character Studio)</h2>
-          <p class="sheet-subtitle">अपने हीरो का रूप, उम्र और बैकग्राउंड चुनें</p>
+          <h2 class="sheet-title">🇮🇳 नागरिक प्रोफाइल (Citizen Profile Studio)</h2>
+          <p class="sheet-subtitle">अपनी पारिवारिक पृष्ठभूमि, शिक्षा, आयु और वेशभूषा चुनें</p>
         </div>
         <button id="customize-close-btn" class="modal-x-btn">✕</button>
       </div>
 
       <div class="customization-tabs">
-        <button class="tab-btn active" data-tab="tab-looks">🎨 रंग-रूप (Looks)</button>
-        <button class="tab-btn" data-tab="tab-identity">📜 पहचान व उम्र (Identity)</button>
+        <button class="tab-btn active" data-tab="tab-identity">📜 पहचान व पृष्ठभूमि (Background)</button>
+        <button class="tab-btn" data-tab="tab-looks">🎨 वेशभूषा व रूप (Appearance)</button>
       </div>
 
       <div class="sheet-content">
-        <!-- Tab 1: Looks -->
-        <div id="tab-looks" class="tab-pane active">
+        <!-- Tab 1: Identity & Background -->
+        <div id="tab-identity" class="tab-pane active">
           <!-- Name Input -->
           <div class="form-group">
-            <label class="form-label" for="input-character-name">योद्धा का नाम (Character Name)</label>
-            <input type="text" id="input-character-name" class="form-input" value="आर्यन (Aaryan)" maxlength="16">
+            <label class="form-label" for="input-character-name">नागरिक का नाम (Your Name)</label>
+            <input type="text" id="input-character-name" class="form-input" value="आर्यन शर्मा" maxlength="20">
           </div>
 
+          <!-- Age Selector -->
+          <div class="form-group">
+            <div class="form-label-row">
+              <label class="form-label" for="slider-age">आयु (Age): <strong id="age-display-value">25 वर्ष</strong></label>
+              <span class="age-category-badge" id="age-category-badge">युवा नेता (Young Leader)</span>
+            </div>
+            <input type="range" id="slider-age" class="form-slider" min="21" max="75" value="25" step="1">
+            <div class="slider-markers">
+              <span>21 (युवा)</span>
+              <span>35 (परिपक्व)</span>
+              <span>55 (वरिष्ठ)</span>
+              <span>75 (मार्गदर्शक)</span>
+            </div>
+          </div>
+
+          <!-- Starting Background Archetype -->
+          <div class="form-group">
+            <label class="form-label">पारिवारिक व सामाजिक पृष्ठभूमि (Starting Background)</label>
+            <div class="archetype-cards-grid" id="archetype-grid">
+              <div class="archetype-card active" data-archetype="activist">
+                <div class="archetype-icon">✊</div>
+                <div class="archetype-details">
+                  <div class="archetype-title">जमीनी समाजसेवी (Grassroots Social Worker)</div>
+                  <div class="archetype-desc">बस्तियों और मोहल्लों में लोगों के हक़ के लिए संघर्ष करने वाला साथी।</div>
+                  <div class="archetype-buff">+35% प्रारंभिक जनसमर्थन • उच्च ईमानदारी साख</div>
+                </div>
+              </div>
+
+              <div class="archetype-card" data-archetype="lawyer">
+                <div class="archetype-icon">⚖️</div>
+                <div class="archetype-details">
+                  <div class="archetype-title">युवा अधिवक्ता (Young Advocate / Lawyer)</div>
+                  <div class="archetype-desc">कानून और संविधान का जानकार, कानूनी जनहित याचिकाएं दर्ज करने में माहिर।</div>
+                  <div class="archetype-buff">+₹25,000 कोष • उच्च वाद-विवाद व भाषण कला</div>
+                </div>
+              </div>
+
+              <div class="archetype-card" data-archetype="merchant">
+                <div class="archetype-icon">🏪</div>
+                <div class="archetype-details">
+                  <div class="archetype-title">स्थानीय किराना व्यापारी (Local Kirana Merchant)</div>
+                  <div class="archetype-desc">व्यापार मंडल का सदस्य, वित्तीय प्रबंधन और दुकानदारों में मजबूत पकड़।</div>
+                  <div class="archetype-buff">+₹65,000 प्रारंभिक पूंजी • व्यावसायिक संपर्क</div>
+                </div>
+              </div>
+
+              <div class="archetype-card" data-archetype="teacher">
+                <div class="archetype-icon">📖</div>
+                <div class="archetype-details">
+                  <div class="archetype-title">आदर्श शिक्षक (Idealist Teacher)</div>
+                  <div class="archetype-desc">शिक्षा सुधार और नई पीढ़ी के भविष्य को संवारने का दृढ़ संकल्प।</div>
+                  <div class="archetype-buff">+₹15,000 कोष • उच्च जनसम्मान व नेतृत्व कौशल</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 2: Appearance & Indian Attire -->
+        <div id="tab-looks" class="tab-pane">
           <!-- Skin Tone -->
           <div class="form-group">
-            <label class="form-label">त्वचा का रंग (Skin Tone)</label>
+            <label class="form-label">त्वचा का रंग (Skin Complexion)</label>
             <div class="color-swatches" id="swatches-skin">
-              <button class="swatch-btn active" data-color="#ffdfba" style="background:#ffdfba;" title="Fair"></button>
-              <button class="swatch-btn" data-color="#e0ac69" style="background:#e0ac69;" title="Warm Golden"></button>
-              <button class="swatch-btn" data-color="#b87a4b" style="background:#b87a4b;" title="Tanned"></button>
-              <button class="swatch-btn" data-color="#694125" style="background:#694125;" title="Deep Brown"></button>
-              <button class="swatch-btn" data-color="#7393b3" style="background:#7393b3;" title="Mystic Blue"></button>
+              <button class="swatch-btn active" data-color="#e0ac69" style="background:#e0ac69;" title="Warm Wheatish (गेहुंआ)"></button>
+              <button class="swatch-btn" data-color="#ffdfba" style="background:#ffdfba;" title="Fair (गोरा)"></button>
+              <button class="swatch-btn" data-color="#b87a4b" style="background:#b87a4b;" title="Tanned (सांवला)"></button>
+              <button class="swatch-btn" data-color="#694125" style="background:#694125;" title="Deep Bronze"></button>
             </div>
           </div>
 
@@ -187,101 +320,28 @@
           <div class="form-group">
             <label class="form-label">हेयरस्टाइल (Hairstyle)</label>
             <div class="preset-pill-group" id="hair-style-group">
-              <button class="pill-btn active" data-hairstyle="short">छोटे बाल (Short)</button>
-              <button class="pill-btn" data-hairstyle="spiky">स्पाइकी (Spiky)</button>
+              <button class="pill-btn active" data-hairstyle="short">पारंपरिक कट (Side Part)</button>
+              <button class="pill-btn" data-hairstyle="spiky">युवा स्टाइल (Spiky)</button>
               <button class="pill-btn" data-hairstyle="long">लंबे बाल (Long)</button>
-              <button class="pill-btn" data-hairstyle="hood">हुड / पगड़ी (Hood)</button>
             </div>
           </div>
 
-          <!-- Hair Color -->
+          <!-- Nehru Jacket / Sadri Color -->
           <div class="form-group">
-            <label class="form-label">बालों का रंग (Hair Color)</label>
-            <div class="color-swatches" id="swatches-hair">
-              <button class="swatch-btn active" data-color="#1a1a1a" style="background:#1a1a1a;" title="Black"></button>
-              <button class="swatch-btn" data-color="#5a3825" style="background:#5a3825;" title="Chestnut"></button>
-              <button class="swatch-btn" data-color="#e6b800" style="background:#e6b800;" title="Blonde"></button>
-              <button class="swatch-btn" data-color="#991b1b" style="background:#991b1b;" title="Ruby Red"></button>
-              <button class="swatch-btn" data-color="#e2e8f0" style="background:#e2e8f0;" title="Silver White"></button>
-            </div>
-          </div>
-
-          <!-- Outfit / Armor Color -->
-          <div class="form-group">
-            <label class="form-label">पोशाक का रंग (Outfit Armor Color)</label>
+            <label class="form-label">नेहरू जैकेट का रंग (Nehru Jacket / Sadri Color)</label>
             <div class="color-swatches" id="swatches-outfit">
-              <button class="swatch-btn active" data-color="#1e3a8a" style="background:#1e3a8a;" title="Sapphire Navy"></button>
-              <button class="swatch-btn" data-color="#047857" style="background:#047857;" title="Forest Emerald"></button>
-              <button class="swatch-btn" data-color="#b91c1c" style="background:#b91c1c;" title="Royal Crimson"></button>
-              <button class="swatch-btn" data-color="#d97706" style="background:#d97706;" title="Desert Ochre"></button>
-              <button class="swatch-btn" data-color="#374151" style="background:#374151;" title="Shadow Grey"></button>
+              <button class="swatch-btn active" data-color="#d97706" style="background:#d97706;" title="Saffron Ochre (भगवा)"></button>
+              <button class="swatch-btn" data-color="#1e3a8a" style="background:#1e3a8a;" title="Royal Navy (शाही नीला)"></button>
+              <button class="swatch-btn" data-color="#047857" style="background:#047857;" title="Emerald Green (हरा)"></button>
+              <button class="swatch-btn" data-color="#b91c1c" style="background:#b91c1c;" title="Khadi Maroon (मैरून)"></button>
+              <button class="swatch-btn" data-color="#1f2937" style="background:#1f2937;" title="Classic Black (काला)"></button>
             </div>
           </div>
 
-          <!-- Cape / Cloak Toggle -->
+          <!-- Nehru Jacket Toggle -->
           <div class="form-group form-row-toggle">
-            <label class="form-label" for="toggle-cape">केप / लबादा पहनें (Wear Cape)</label>
+            <label class="form-label" for="toggle-cape">नेहरू जैकेट पहनें (Wear Nehru Jacket)</label>
             <input type="checkbox" id="toggle-cape" class="toggle-checkbox" checked>
-          </div>
-        </div>
-
-        <!-- Tab 2: Identity (Background & Age) -->
-        <div id="tab-identity" class="tab-pane">
-          <!-- Age Selector -->
-          <div class="form-group">
-            <div class="form-label-row">
-              <label class="form-label" for="slider-age">उम्र (Age): <strong id="age-display-value">24 वर्ष</strong></label>
-              <span class="age-category-badge" id="age-category-badge">युवा योद्धा (Youth)</span>
-            </div>
-            <input type="range" id="slider-age" class="form-slider" min="16" max="70" value="24" step="1">
-            <div class="slider-markers">
-              <span>16 (तरुण)</span>
-              <span>28 (युवा)</span>
-              <span>45 (अनुभवी)</span>
-              <span>70 (बुजुर्ग गुरु)</span>
-            </div>
-          </div>
-
-          <!-- Background Archetype -->
-          <div class="form-group">
-            <label class="form-label">पृष्ठभूमि / बैकग्राउंड (Origin & Background)</label>
-            <div class="archetype-cards-grid" id="archetype-grid">
-              <div class="archetype-card active" data-archetype="nomad">
-                <div class="archetype-icon">🏹</div>
-                <div class="archetype-details">
-                  <div class="archetype-title">खानाबदोश शिकारी (Nomad Scout)</div>
-                  <div class="archetype-desc">दूर-दराज के जंगलों से आया फुर्तीला मार्गदर्शक।</div>
-                  <div class="archetype-buff">+20% चाल गति (Movement Speed)</div>
-                </div>
-              </div>
-
-              <div class="archetype-card" data-archetype="scholar">
-                <div class="archetype-icon">🔮</div>
-                <div class="archetype-details">
-                  <div class="archetype-title">रहस्यवादी विद्वान (Mystic Scholar)</div>
-                  <div class="archetype-desc">प्राचीन मंत्रों और ऊर्जा क्रिस्टल का पारखी।</div>
-                  <div class="archetype-buff">क्रिस्टल रोशनी और चमक आभा (Aura Glow)</div>
-                </div>
-              </div>
-
-              <div class="archetype-card" data-archetype="knight">
-                <div class="archetype-icon">⚔️</div>
-                <div class="archetype-details">
-                  <div class="archetype-title">शाही अंगरक्षक (Royal Knight)</div>
-                  <div class="archetype-desc">राजमहल का सम्मानित सैनिक व साहसी रक्षक।</div>
-                  <div class="archetype-buff">+25% ऊंची छलांग (High Jump Power)</div>
-                </div>
-              </div>
-
-              <div class="archetype-card" data-archetype="hermit">
-                <div class="archetype-icon">🌿</div>
-                <div class="archetype-details">
-                  <div class="archetype-title">पर्वतीय साधु (Mountain Hermit)</div>
-                  <div class="archetype-desc">प्रकृति व पहाड़ों में एकांत साधना करने वाला।</div>
-                  <div class="archetype-buff">संतुलित सहनशक्ति (Stamina & Stability)</div>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -292,13 +352,13 @@
     </div>
   </div>
 
-  <!-- Quest Log Modal -->
+  <!-- Mission Log Modal -->
   <div id="quest-modal" class="modal-overlay hidden">
     <div class="modal-sheet">
       <div class="sheet-header">
         <div class="header-titles">
-          <h2 class="sheet-title">मिशन सूची (Missions Log)</h2>
-          <p class="sheet-subtitle">अपनी प्रगति ट्रैक करें और अगला उद्देश्य देखें</p>
+          <h2 class="sheet-title">📜 जन-मिशन सूची (Missions Roadmap)</h2>
+          <p class="sheet-subtitle">नागरिक सेवा से देश के सर्वोच्च पद तक की यात्रा</p>
         </div>
         <button id="quest-close-btn" class="modal-x-btn">✕</button>
       </div>
@@ -314,16 +374,15 @@
     <div class="modal-sheet">
       <div class="sheet-header">
         <div class="header-titles">
-          <h2 class="sheet-title">गेम सेव व लोड (Save & Load System)</h2>
-          <p class="sheet-subtitle">स्थानीय स्लॉट या फ़ाइल एक्सपोर्ट/इम्पोर्ट करें</p>
+          <h2 class="sheet-title">💾 गेम सेव व लोड (Save & Load System)</h2>
+          <p class="sheet-subtitle">स्थानीय स्लॉट या JSON फ़ाइल डाउनलोड/अपलोड करें</p>
         </div>
         <button id="save-close-btn" class="modal-x-btn">✕</button>
       </div>
 
       <div class="sheet-content">
-        <!-- Save Slots -->
         <div class="save-slots-list" id="save-slots-container">
-          <!-- Injected via SaveSystem -->
+          <!-- Rendered by SaveSystem -->
         </div>
 
         <div class="save-export-bar">
@@ -332,51 +391,6 @@
             📤 फ़ाइल से लोड (Import JSON)
             <input type="file" id="input-import-save" accept=".json" style="display:none">
           </label>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Victory / Prototype Finish Modal -->
-  <div id="victory-modal" class="modal-overlay hidden">
-    <div class="victory-card">
-      <div class="victory-particles-icon">🏆✨</div>
-      <h2 class="victory-title">बधाई! सारे मिशन पूरे हुए!</h2>
-      <p class="victory-subtitle">Prototype Quest Line Completed!</p>
-      <div class="victory-stats-box" id="victory-stats-box">
-        <!-- Injected via QuestManager -->
-      </div>
-      <p class="victory-message">
-        आपने एल्डर का आशीर्वाद लिया, सभी 4 तत्वीय क्रिस्टल खोजे, मीनार का पावन दीया जलाया और प्राचीन मंदिर का सील तोड़कर पवित्र अवशेष प्राप्त कर लिया!
-      </p>
-      <div class="victory-actions">
-        <button id="btn-victory-continue" class="btn-primary-glow">विश्व का अन्वेषण जारी रखें (Free Roam)</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Android Build Info Banner Modal (Instructions to build APK) -->
-  <div id="build-info-modal" class="modal-overlay hidden">
-    <div class="modal-sheet">
-      <div class="sheet-header">
-        <div class="header-titles">
-          <h2 class="sheet-title">🤖 Android Build & Installation Guide</h2>
-          <p class="sheet-subtitle">APK तैयार करने और मोबाइल पर चलाने के चरण</p>
-        </div>
-        <button id="build-close-btn" class="modal-x-btn">✕</button>
-      </div>
-      <div class="sheet-content android-guide-body">
-        <div class="guide-box">
-          <h4>📱 1. मोबाइल ब्राउज़र / PWA तुरंत चलाएं (Instant)</h4>
-          <p>अपने Android Chrome में इस गेम का URL खोलें और <strong>"Add to Home screen" (होम स्क्रीन पर जोड़ें)</strong> दबाएं। यह बिना किसी झंझट के फुलस्क्रीन नेटिव ऐप की तरह इंस्टॉल हो जाएगा।</p>
-        </div>
-        <div class="guide-box">
-          <h4>📦 2. Capacitor से Android Studio / APK Build</h4>
-          <pre><code>npm run build
-npx cap add android
-npx cap sync
-npx cap open android</code></pre>
-          <p>Android Studio में 'Build APK' पर क्लिक करें और अपने फोन में .apk फाइल इंस्टॉल करें।</p>
         </div>
       </div>
     </div>

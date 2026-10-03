@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Astral Realm 3D</string>
-    <string name="title_activity_main">Astral Realm 3D</string>
+    <string name="app_name">RashtraNiti 3D</string>
+    <string name="title_activity_main">RashtraNiti 3D</string>
     <string name="package_name">com.astralrealm.game</string>
     <string name="custom_url_scheme">com.astralrealm.game</string>
 </resources>
