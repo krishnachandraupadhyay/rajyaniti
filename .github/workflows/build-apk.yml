@@ -3,9 +3,10 @@ name: Build Android APK
 on:
   push:
     branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -47,10 +48,25 @@ jobs:
         run: |
           cd android
           ./gradlew assembleDebug --stacktrace
+          cp app/build/outputs/apk/debug/app-debug.apk ../AstralRealm3D.apk
 
-      - name: Upload Debug APK
+      - name: Upload Debug APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: AstralRealm3D-Android-APK
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          path: AstralRealm3D.apk
           if-no-files-found: error
+
+      - name: Publish Direct APK to GitHub Releases
+        uses: softprops/action-gh-release@v2
+        if: github.ref == 'refs/heads/main'
+        with:
+          tag_name: v1.0.0
+          name: Astral Realm 3D v1.0.0 (Playable APK)
+          body: |
+            ## 🎮 Astral Realm 3D Android Playable Prototype
+            - Direct Android APK: Click **AstralRealm3D.apk** below to download directly on your phone!
+            - No unzipping needed.
+          files: AstralRealm3D.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
