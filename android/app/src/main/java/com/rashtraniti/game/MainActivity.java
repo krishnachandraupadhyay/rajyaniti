@@ -1,4 +1,4 @@
-package com.astralrealm.game;
+package com.rashtraniti.game;
 
 import com.getcapacitor.BridgeActivity;
 

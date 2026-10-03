@@ -2,6 +2,6 @@
 <resources>
     <string name="app_name">RashtraNiti 3D</string>
     <string name="title_activity_main">RashtraNiti 3D</string>
-    <string name="package_name">com.astralrealm.game</string>
-    <string name="custom_url_scheme">com.astralrealm.game</string>
+    <string name="package_name">com.rashtraniti.game</string>
+    <string name="custom_url_scheme">com.rashtraniti.game</string>
 </resources>
